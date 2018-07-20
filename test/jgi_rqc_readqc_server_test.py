@@ -93,5 +93,6 @@ class jgi_rqc_readqcTest(unittest.TestCase):
             'workspace_name': self.getWsName(),
             'fastqFile': ref,
             'libName': "ctzox"
+        })
         print result
 
