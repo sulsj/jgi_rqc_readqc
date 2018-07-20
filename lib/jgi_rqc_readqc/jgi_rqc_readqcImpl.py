@@ -101,6 +101,8 @@ class jgi_rqc_readqc:
         # ctx is the context object
         # return variables are: output
         #BEGIN run_readqc
+        print(params)
+        output = {}
         #END run_readqc
 
         # At some point might do deeper type checking...

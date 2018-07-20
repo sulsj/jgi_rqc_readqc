@@ -86,5 +86,12 @@ class jgi_rqc_readqcTest(unittest.TestCase):
         #
         # Check returned data with
         # self.assertEqual(ret[...], ...) or other unittest methods
-        print "test"
-        pass
+        print "test..."
+        ref = "79/16/1"
+        ref = "79/16/1"
+        result = self.getImpl().run_readqc(self.getContext(), {
+            'workspace_name': self.getWsName(),
+            'fastqFile': ref,
+            'libName': "ctzox"
+        print result
+
