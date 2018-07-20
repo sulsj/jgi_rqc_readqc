@@ -1,0 +1,44 @@
+#
+# define display information
+#
+name: Run the JGI Read QC pipeline
+
+tooltip: |
+    Run the JGI Read QC pipeline
+
+screenshots: []
+
+icon: icon.png
+
+#
+# define a set of similar methods that might be useful to the user
+#
+suggestions:
+    apps:
+        related:
+            [app1, app2]
+        next:
+            [app3, app4]
+    methods:
+        related:
+            [method1, method2]
+        next:
+            [method3, method4]
+
+#
+# Configure the display and description of parameters
+#
+parameters :
+    fastqFile :
+        ui-name : Input fastq file
+        short-hint : Input fastq file
+    libName :
+        ui-name : Input library name
+        short-hint : Input library name
+    isMultiplexed :
+        ui-name : Multiplexed
+        short-hint : Multiplexed data or not (default=no)
+            
+
+description : 
+  Run the JGI Read QC pipeline

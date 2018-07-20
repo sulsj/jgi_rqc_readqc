@@ -33,6 +33,67 @@ class jgi_rqc_readqc(object):
             trust_all_ssl_certificates=trust_all_ssl_certificates,
             auth_svc=auth_svc)
 
+    def run_readqc_app(self, params, context=None):
+        """
+        Run readqc and save a KBaseReport with the output.
+        :param params: instance of type "readqcAppParams" (Input for running
+           readqc as a Narrative application.) -> structure: parameter
+           "workspaceName" of String, parameter "fastqFile" of type
+           "fastqFileRef" (An X/Y/Z style reference to a workspace object
+           containing a fastq, either a "KBaseFile.PairedEndLibrary",
+           "KBaseFile.SingleEndLibrary", "KBaseAssembly.PairedEndLibrary",
+           "KBaseAssembly.SingleEndLibrary"), parameter "libName" of String,
+           parameter "isMultiplexed" of type "boolean" (A boolean - 0 for
+           false, 1 for true. @range (0, 1))
+        :returns: instance of type "readqcAppOutput" (Output of the
+           run_readqc_app function.) -> structure: parameter "reportName" of
+           String, parameter "reportRef" of String
+        """
+        return self._client.call_method(
+            'jgi_rqc_readqc.run_readqc_app',
+            [params], self._service_ver, context)
+
+    def run_readqc(self, params, context=None):
+        """
+        Run readqc and return a shock node containing the zipped readqc output.
+        :param params: instance of type "readqcParams" (Input for running
+           readqc fastqFile - fastq file upon which readqc will be run. -OR-
+           fastaFile - local FASTA file upon which readqc will be run.
+           libName: input fastq/fasta's library name isMultiplexed: set 1 if
+           the input is a multiplexed fastq/fasta) -> structure: parameter
+           "fastqFile" of type "fastqFileRef" (An X/Y/Z style reference to a
+           workspace object containing a fastq, either a
+           "KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary",
+           "KBaseAssembly.PairedEndLibrary",
+           "KBaseAssembly.SingleEndLibrary"), parameter "fastaFile" of type
+           "fastaFileType" (A local FASTA file. path - the path to the FASTA
+           file. label - the label to use for the file in the readqc output.
+           If missing, the file name will be used.) -> structure: parameter
+           "path" of String, parameter "label" of String, parameter "libName"
+           of String, parameter "isMultiplexed" of type "boolean" (A boolean
+           - 0 for false, 1 for true. @range (0, 1))
+        :returns: instance of type "readqcOutput" (Ouput of the run_readqc
+           function. shockId - the id of the shock node where the zipped
+           readqc output is stored. handle - the new handle for the shock
+           node, if created. nodeFileName - the name of the file stored in
+           Shock. size - the size of the file stored in shock. readqcPath -
+           the directory containing the readqc output and the zipfile of the
+           directory.) -> structure: parameter "shockId" of String, parameter
+           "handle" of type "Handle" (A handle for a file stored in Shock.
+           hid - the id of the handle in the Handle Service that references
+           this shock node id - the id for the shock node url - the url of
+           the shock server type - the type of the handle. This should always
+           be shock. file_name - the name of the file remote_md5 - the md5
+           digest of the file.) -> structure: parameter "hid" of String,
+           parameter "fileName" of String, parameter "id" of String,
+           parameter "url" of String, parameter "type" of String, parameter
+           "remoteMd5" of String, parameter "nodeFileName" of String,
+           parameter "size" of String, parameter "readqcPath" of String
+        """
+        return self._client.call_method(
+            'jgi_rqc_readqc.run_readqc',
+            [params], self._service_ver, context)
+
     def status(self, context=None):
         return self._client.call_method('jgi_rqc_readqc.status',
                                         [], self._service_ver, context)

@@ -1,0 +1,102 @@
+{
+    "ver": "0.0.1",
+    "authors": [
+        "sulsj9230"
+    ],
+    "contact": "",
+    "categories": ["reads"],
+    "widgets": {
+        "input": null,
+        "output": "no-display"
+    },
+    "parameters": [ 
+        {
+            "id": "fastqFile",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": [
+                    "KBaseFile.PairedEndLibrary",
+                    "KBaseFile.SingleEndLibrary",
+                    "KBaseAssembly.PairedEndLibrary",
+                    "KBaseAssembly.SingleEndLibrary"
+                ]
+            }
+        },
+        {
+            "id": "isMultiplexed",
+            "optional": true,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": ["0"],
+            "field_type" : "checkbox",
+            "checkbox_options": {
+                "checked_value": 1,
+                "unchecked_value": 0
+            }
+        },
+        {
+            "id": "libName",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "validate_as": "string"
+            }
+        }
+    ],
+    "behavior": {
+        "service-mapping": {
+            "url": "",
+            "name": "jgi_rqc_readqc",
+            "method": "run_readqc_app",
+            "input_mapping": [
+                {
+                    "narrative_system_variable": "workspace",                    
+                    "target_property": "workspaceName"
+                },
+                {
+                    "input_parameter": "fastqFile",
+                    "target_property": "fastqFile",
+                    "target_type_transform": "resolved-ref"
+                },
+                {
+                    "input_parameter" : "isMultiplexed",
+                    "target_property" : "isMultiplexed"
+                },
+                {
+                    "input_parameter" : "libName",
+                    "target_property" : "libName"
+                }                
+            ],
+            "output_mapping": [
+                {
+                    "service_method_output_path": [0, "reportName"],
+                    "target_property": "reportName"
+                },
+                {
+                    "service_method_output_path": [0, "reportRef"],
+                    "target_property": "reportRef"
+                },
+                 {
+                    "service_method_output_path": [0],
+                    "target_property": "readqcResult"
+                },
+                {
+                    "narrative_system_variable": "workspace",
+                    "target_property": "workspaceName"
+                },
+                {
+                    "input_parameter": "fastqFile",
+                    "target_property": "inputfastqFile"
+                }
+            ]
+        }
+    },
+    "job_id_output_field": "docker"
+}

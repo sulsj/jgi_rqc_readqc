@@ -11,6 +11,7 @@ import us.kbase.auth.AuthToken;
 import us.kbase.common.service.JsonClientCaller;
 import us.kbase.common.service.JsonClientException;
 import us.kbase.common.service.RpcContext;
+import us.kbase.common.service.UnauthorizedException;
 
 /**
  * <p>Original spec-file module name: jgi_rqc_readqc</p>
@@ -28,6 +29,49 @@ public class JgiRqcReadqcClient {
      */
     public JgiRqcReadqcClient(URL url) {
         caller = new JsonClientCaller(url);
+    }
+    /** Constructs a client with a custom URL.
+     * @param url the URL of the service.
+     * @param token the user's authorization token.
+     * @throws UnauthorizedException if the token is not valid.
+     * @throws IOException if an IOException occurs when checking the token's
+     * validity.
+     */
+    public JgiRqcReadqcClient(URL url, AuthToken token) throws UnauthorizedException, IOException {
+        caller = new JsonClientCaller(url, token);
+    }
+
+    /** Constructs a client with a custom URL.
+     * @param url the URL of the service.
+     * @param user the user name.
+     * @param password the password for the user name.
+     * @throws UnauthorizedException if the credentials are not valid.
+     * @throws IOException if an IOException occurs when checking the user's
+     * credentials.
+     */
+    public JgiRqcReadqcClient(URL url, String user, String password) throws UnauthorizedException, IOException {
+        caller = new JsonClientCaller(url, user, password);
+    }
+
+    /** Constructs a client with a custom URL
+     * and a custom authorization service URL.
+     * @param url the URL of the service.
+     * @param user the user name.
+     * @param password the password for the user name.
+     * @param auth the URL of the authorization server.
+     * @throws UnauthorizedException if the credentials are not valid.
+     * @throws IOException if an IOException occurs when checking the user's
+     * credentials.
+     */
+    public JgiRqcReadqcClient(URL url, String user, String password, URL auth) throws UnauthorizedException, IOException {
+        caller = new JsonClientCaller(url, user, password, auth);
+    }
+
+    /** Get the token this client uses to communicate with the server.
+     * @return the authorization token.
+     */
+    public AuthToken getToken() {
+        return caller.getToken();
     }
 
     /** Get the URL of the service with which this client communicates.
@@ -116,6 +160,42 @@ public class JgiRqcReadqcClient {
 
     public void setServiceVersion(String newValue) {
         this.serviceVersion = newValue;
+    }
+
+    /**
+     * <p>Original spec-file function name: run_readqc_app</p>
+     * <pre>
+     * Run readqc and save a KBaseReport with the output.
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.jgirqcreadqc.ReadqcAppParams ReadqcAppParams} (original type "readqcAppParams")
+     * @return   parameter "output" of type {@link us.kbase.jgirqcreadqc.ReadqcAppOutput ReadqcAppOutput} (original type "readqcAppOutput")
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public ReadqcAppOutput runReadqcApp(ReadqcAppParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<ReadqcAppOutput>> retType = new TypeReference<List<ReadqcAppOutput>>() {};
+        List<ReadqcAppOutput> res = caller.jsonrpcCall("jgi_rqc_readqc.run_readqc_app", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: run_readqc</p>
+     * <pre>
+     * Run readqc and return a shock node containing the zipped readqc output.
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.jgirqcreadqc.ReadqcParams ReadqcParams} (original type "readqcParams")
+     * @return   parameter "output" of type {@link us.kbase.jgirqcreadqc.ReadqcOutput ReadqcOutput} (original type "readqcOutput")
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public ReadqcOutput runReadqc(ReadqcParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<ReadqcOutput>> retType = new TypeReference<List<ReadqcOutput>>() {};
+        List<ReadqcOutput> res = caller.jsonrpcCall("jgi_rqc_readqc.run_readqc", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
     }
 
     public Map<String, Object> status(RpcContext... jsonRpcContext) throws IOException, JsonClientException {
