@@ -87,6 +87,41 @@ class jgi_rqc_readqcTest(unittest.TestCase):
         # Check returned data with
         # self.assertEqual(ret[...], ...) or other unittest methods
         print "test..."
+        
+        import subprocess
+        def runCommand(cmd):
+            process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = process.communicate()
+            exitcode = process.returncode
+            return stdout.strip(), stderr.strip(), exitcode
+        
+        cmd = "java -version; python -V"
+        print runCommand(cmd)
+        cmd = "echo $PATH; which reformat.sh; which Rscript; Rscript --version"
+        print runCommand(cmd)
+        cmd = "source activate base; which Rscript; Rscript --version"
+        print runCommand(cmd)
+        # cmd = "echo $PWD && ls /kb/module"
+        # print runCommand(cmd)
+        cmd = "source activate base; which python; python -c 'import colorlog; print colorlog.__file__'"
+        print runCommand(cmd)
+        
+        import cython
+        import scipy
+        import pika
+        import colorlog
+        import mpld3
+        import yaml
+        import Bio
+        import pysam
+        import jinja2
+        import MySQLdb
+        import cx_Oracle
+        import matplotlib
+        
+        cmd = "which reformat.sh ; reformat.sh -h"
+        print runCommand(cmd)
+        
         ref = "79/16/1"
         result = self.getImpl().run_readqc(self.getContext(), {
             'workspace_name': self.getWsName(),

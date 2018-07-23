@@ -102,35 +102,6 @@ class jgi_rqc_readqc:
         # ctx is the context object
         # return variables are: output
         #BEGIN run_readqc
-        import subprocess
-        def runCommand(cmd):
-            process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = process.communicate()
-            exitcode = process.returncode
-            return stdout.strip(), stderr.strip(), exitcode
-
-        # print(params)        
-        # cmd = "java -version; python -V"
-        # print runCommand(cmd)
-        cmd = "echo $PATH; which reformat.sh; which Rscript; Rscript --version"
-        print runCommand(cmd)
-        # cmd = "echo $PWD && ls /kb/module"
-        # print runCommand(cmd)
-        
-        import cython
-        import scipy
-        import pika
-        import colorlog
-        import mpld3
-        import yaml
-        import Bio
-        import pysam
-        import jinja2
-        import MySQLdb
-        import cx_Oracle
-        import matplotlib
-        
-        output = {}
         #END run_readqc
 
         # At some point might do deeper type checking...
