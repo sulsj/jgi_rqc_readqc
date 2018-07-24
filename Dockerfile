@@ -7,7 +7,7 @@ MAINTAINER KBase Developer
 # installation scripts.
 
 RUN apt-get update
-#RUN apt-get install -y gawk libmysqlclient-dev
+RUN apt-get install -y gawk libmysqlclient-dev
 
 # -----------------------------------------
 
@@ -18,30 +18,7 @@ RUN chmod -R a+rw /kb/module
 WORKDIR /kb/module
 
 #############################################
-# Install miniconda to /kb/module/miniconda
-#############################################
-#COPY environment.yml /kb/module/environment.yml
-RUN curl -LO http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh \
-    && bash Miniconda-latest-Linux-x86_64.sh -p /kb/module/miniconda -b \
-    && rm Miniconda-latest-Linux-x86_64.sh
-RUN ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate base" >> ~/.bashrc
-ENV PATH=/kb/module/miniconda/bin:${PATH}
-RUN conda update -y conda
-
-## Install r packages needed
-RUN conda install -c r r-base \
-    r-essentials r-caret r-devtools \
-    r-roxygen2 r-testthat r-stringr \
-    r-ggplot2 r-tidyr r-dplyr \
-    && conda install -c conda-forge r-covr r-docopt r-purrr \
-    && conda install -c bioconda bioconductor-genomicranges bioconductor-biostrings \
-    && conda install gawk
-
-#############################################
-# Install Python packages needed
-# This will be installed under /kb/module/miniconda/lib/python2.7/site-packages
+# Python packages
 #############################################
 RUN pip install --upgrade pip \
     && pip install testresources colorlog mpld3 pysam cx_Oracle
@@ -49,9 +26,13 @@ RUN pip install --upgrade pip \
 #############################################
 ## bbtools
 #############################################
-RUN wget https://sourceforge.net/projects/bbmap/files/latest/download/bbmap.tar.gz \
-    && tar -xzvf bbmap.tar.gz \
-    && rm -rf bbmap.tar.gz
+#ENV BBTOOLS_VER 38.06
+#RUN wget http://downloads.sourceforge.net/project/bbmap/BBMap_${BBTOOLS_VER}.tar.gz
+#RUN tar -xzvf BBMap_${BBTOOLS_VER}.tar.gz
+#RUN rm -rf /BBMap_${BBTOOLS_VER}.tar.gz
+#RUN wget https://sourceforge.net/projects/bbmap/files/latest/download/bbmap.tar.gz \
+#    && tar -xzvf bbmap.tar.gz \
+#    && rm -rf bbmap.tar.gz
 
 #############################################
 # readqc
@@ -59,6 +40,26 @@ RUN wget https://sourceforge.net/projects/bbmap/files/latest/download/bbmap.tar.
 RUN git clone http://gitlab+deploy-token-3510:o1MENCTuP2HMY5Go_sUk@gitlab.com/sulsj/jgi-rqc-pipeline.git
 COPY run_blastplus.sh /kb/module
 COPY readqc.sh /kb/module
+
+#############################################
+# R packages
+#############################################
+#RUN apt-get install -y r-base
+#RUN Rscript -e "install.packages(c('devtools', 'covr', 'roxygen2', 'testthat', 'stringr'), repos = 'https://cloud.r-project.org/')"
+#RUN Rscript -e "install.packages('ggplot2', dependencies=TRUE, repos='http://cran.us.r-project.org')" && \
+#    Rscript -e "install.packages('tidyr', dependencies=TRUE, repos='http://cran.us.r-project.org')" && \
+#    Rscript -e "install.packages('docopt', dependencies=TRUE, repos='http://cran.us.r-project.org')" && \
+#    Rscript -e "install.packages('dplyr', dependencies=TRUE, repos='http://cran.us.r-project.org')"
+##RUN R -e "source('https://bioconductor.org/biocLite.R'); biocLite('GenomicRanges')" && \
+#    #R -e "source('https://bioconductor.org/biocLite.R'); biocLite('Biostrings')" && \
+#    #rm -rf /tmp/*
+
+#RUN apt-get install -y --no-install-recommends \
+#    libfftw3-dev \
+#    gcc && apt-get clean \
+#    && rm -rf /var/lib/apt/lists/*
+#RUN Rscript -e 'source("http://bioconductor.org/biocLite.R")' -e 'biocLite("GenomicRanges")' \
+#    && Rscript -e 'source("http://bioconductor.org/biocLite.R")' -e 'biocLite("Biostrings")'
 
 #############################################
 ## blast+
@@ -80,7 +81,7 @@ COPY cromwell.sh /kb/module/
 COPY wdl/* /kb/module/
 
 
-ENV PYTHONPATH="/kb/module/miniconda/lib/python2.7/site-packages:/kb/module/jgi-rqc-pipeline/lib:/kb/module/jgi-rqc-pipeline/tools:/usr/local/lib/python2.7/site-packages:${PYTHONPATH}"
+ENV PYTHONPATH="/kb/module/jgi-rqc-pipeline/lib:/kb/module/jgi-rqc-pipeline/tools:/usr/local/lib/python2.7/site-packages:${PYTHONPATH}"
 ENV PATH=".:/kb/module/bbmap:/kb/module/jgi-rqc-pipeline/tools:/kb/module/jgi-rqc-pipeline/readqc/tools:/kb/module/jgi-rqc-pipeline/lib:${PATH}"
 ENV NERSC_HOST="docker"
 

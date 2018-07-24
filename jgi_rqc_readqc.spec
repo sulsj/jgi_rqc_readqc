@@ -99,5 +99,6 @@ module jgi_rqc_readqc {
     } readqcOutput;
     
     /* Run readqc and return a shock node containing the zipped readqc output. */
-    funcdef run_readqc(readqcParams params) returns(readqcOutput output) authentication required;    
+    funcdef run_readqc(readqcParams params) returns(readqcOutput output)
+        authentication required;    
 };

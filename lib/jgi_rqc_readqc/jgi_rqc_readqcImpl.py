@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 #BEGIN_HEADER
+import os
+import subprocess
+import pprint
+import uuid
+import time
+import errno
+
+from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 #END_HEADER
 
 import subprocess
@@ -24,15 +32,31 @@ class jgi_rqc_readqc:
     GIT_COMMIT_HASH = "1ceffb545849cdeb9dabf9c65dac80bf52ed3114"
 
     #BEGIN_CLASS_HEADER
+    def log(self, message, prefix_newline=False):
+        print(('\n' if prefix_newline else '') + str(time.time()) + ': ' + message)
+
+    # http://stackoverflow.com/a/600612/643675
+    def mkdir_p(self, path):
+        if not path:
+            return
+        try:
+            os.makedirs(path)
+        except OSError as exc:
+            if exc.errno == _errno.EEXIST and os.path.isdir(path):
+                pass
+            else:
+                raise
+            
     #END_CLASS_HEADER
 
     # config contains contents of config file in a hash or None if it couldn't
     # be found
     def __init__(self, config):
         #BEGIN_CONSTRUCTOR
+        self.callback_url = os.environ['SDK_CALLBACK_URL']
+        self.scratch = config['scratch']
         #END_CONSTRUCTOR
-        pass
-
+        pass    
 
     def run_readqc_app(self, ctx, params):
         """
@@ -53,6 +77,8 @@ class jgi_rqc_readqc:
         # ctx is the context object
         # return variables are: output
         #BEGIN run_readqc_app
+        print("self.callback_url=%s" % self.callback_url)
+        output = {}
         #END run_readqc_app
 
         # At some point might do deeper type checking...
@@ -102,6 +128,40 @@ class jgi_rqc_readqc:
         # ctx is the context object
         # return variables are: output
         #BEGIN run_readqc
+        def runCommand(cmd):
+            process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = process.communicate()
+            exitcode = process.returncode
+            return stdout.strip(), stderr.strip(), exitcode
+
+        self.log('Starting Read QC run. Parameters:')
+        self.log(str(params))
+        print(params)
+
+        for name in ['fastqFile', 'libName', 'isMultiplexed', 'workspaceName']:
+            if name not in params:
+                raise ValueError('Parameter "' + name + '" is required but missing')
+        if not isinstance(params['fastqFile'], basestring) or not len(params['fastqFile']):
+            raise ValueError('Pass in a valid assembly reference string')
+        if not isinstance(params['libName'], str):
+            raise ValueError('Library name must be a string')
+        if not isinstance(params['isMultiplexed'], int):
+            raise ValueError('Min length must be a non-negative integer')
+
+        assembly_util = AssemblyUtil(self.callback_url)
+        file = assembly_util.get_assembly_as_fasta({'ref': params['fastqFile']})
+        print "fastq file = "
+        pprint.pprint(file)
+
+        output = {}
+        
+        tdir = os.path.join(self.scratch, str(uuid.uuid4()))
+        self.mkdir_p(tdir)
+        outoutDir = os.path.join(tdir, file['assembly_name'])
+        cmd = "/kb/module//readqc.sh -f %s -o %s -r 0 -l CTZOX --skip-blast -m 0" % (file['path'], outoutDir)
+        stdOut, strErr, exitCode = runCommand(cmd)
+        print "stdOut, strErr, exitCode = %s %s %s" % (stdOut, strErr, exitCode)
+        
         #END run_readqc
 
         # At some point might do deeper type checking...
@@ -110,6 +170,7 @@ class jgi_rqc_readqc:
                              'output is not type dict as required.')
         # return the results
         return [output]
+
     def status(self, ctx):
         #BEGIN_STATUS
         returnVal = {'state': "OK",
