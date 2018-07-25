@@ -4,7 +4,7 @@
         "sulsj9230"
     ],
     "contact": "",
-    "categories": ["reads"],
+    "categories": ["active", "reads"],
     "widgets": {
         "input": null,
         "output": "no-display"

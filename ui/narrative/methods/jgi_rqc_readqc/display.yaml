@@ -1,10 +1,9 @@
 #
 # define display information
 #
-name: Run the JGI Read QC pipeline
-
-tooltip: |
-    Run the JGI Read QC pipeline
+name: JGI Read QC pipeline
+subtitle : JGI Read QC pipeline
+tooltip: Run the JGI Read QC pipeline
 
 screenshots: []
 
