@@ -167,18 +167,7 @@ class jgi_rqc_readqc:
 
 
 
-        ## upload
-        ## https://gitlab.com/kbase-tools/kbase-binqc/blob/master/test/binqc_server_test.py
-        # assembly_filename = 'allbins.fa'
-        # cls.assembly_filename_path = os.path.join(cls.scratch, assembly_filename)
-        # shutil.copy(os.path.join("data", assembly_filename), cls.assembly_filename_path)
-        # # from scratch upload to workspace
-        # assembly_params = {
-        #     'file': {'path': cls.assembly_filename_path},
-        #     'workspace_name': cls.ws_info[1],
-        #     'assembly_name': 'MyAssembly'
-        # }
-        # cls.assembly_ref = cls.au.save_assembly_from_fasta(assembly_params)
+        
 
 
 

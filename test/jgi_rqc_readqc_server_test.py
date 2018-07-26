@@ -93,7 +93,7 @@ class jgi_rqc_readqcTest(unittest.TestCase):
             process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = process.communicate()
             exitcode = process.returncode
-            return stdout.strip(), stderr.strip(), exitcode
+            return stdout.strip(), stderr.strip(), exitcode               
         
         cmd = "java -version; python -V"
         print runCommand(cmd)
@@ -127,6 +127,21 @@ class jgi_rqc_readqcTest(unittest.TestCase):
         cmd = "which reformat.sh"
         print runCommand(cmd)
         
+        
+        ## upload
+        ## https://gitlab.com/kbase-tools/kbase-binqc/blob/master/test/binqc_server_test.py
+        # assembly_filename = 'allbins.fa'
+        # cls.assembly_filename_path = os.path.join(cls.scratch, assembly_filename)
+        # shutil.copy(os.path.join("data", assembly_filename), cls.assembly_filename_path)
+        # # from scratch upload to workspace
+        # assembly_params = {
+        #     'file': {'path': cls.assembly_filename_path},
+        #     'workspace_name': cls.ws_info[1],
+        #     'assembly_name': 'MyAssembly'
+        # }
+        # cls.assembly_ref = cls.au.save_assembly_from_fasta(assembly_params)
+        
+        
         # ref = "79/16/1"
         ref = "16243/6/1" # 7257.1.64419.CACATTGTGAG.fastq
         # ref = "16243/8/1" # 12544.1.263494.CGAGTAT-CGAGTAT.fastq.gz
@@ -134,7 +149,7 @@ class jgi_rqc_readqcTest(unittest.TestCase):
         result = self.getImpl().run_readqc(self.getContext(), {
             'workspaceName': self.getWsName(),
             'fastqFile': ref,
-            # 'libName': "ctzox",
+            # 'libName': "CTZOX",
             # 'libName': "CUUOZ",
             'libName': "M1868.A9",              
             'isMultiplexed': 0
