@@ -2,3 +2,5 @@ test_local
 sdk.cfg
 *.BAK
 *.OLD
+cromwell-33.1.jar
+bbmap.tar.gz

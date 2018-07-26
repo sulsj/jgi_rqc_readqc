@@ -122,15 +122,21 @@ class jgi_rqc_readqcTest(unittest.TestCase):
         import MySQLdb
         import cx_Oracle
         import matplotlib
+        import shutil
         
         cmd = "which reformat.sh"
         print runCommand(cmd)
         
-        ref = "79/16/1"
+        # ref = "79/16/1"
+        ref = "16243/6/1" # 7257.1.64419.CACATTGTGAG.fastq
+        # ref = "16243/8/1" # 12544.1.263494.CGAGTAT-CGAGTAT.fastq.gz
+        
         result = self.getImpl().run_readqc(self.getContext(), {
             'workspaceName': self.getWsName(),
             'fastqFile': ref,
-            'libName': "ctzox",
+            # 'libName': "ctzox",
+            # 'libName': "CUUOZ",
+            'libName': "M1868.A9",              
             'isMultiplexed': 0
         })
         print result
