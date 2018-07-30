@@ -62,7 +62,12 @@ class jgi_rqc_readqc:
                                  '"workspaceName" with "fastqFile" fields ' +
                                  'must be set.')
             return str(params['workspaceName']) + '/' + str(params['fastqFile'])
-        
+    
+    def run_command(self, cmd):
+        process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate()
+        exitcode = process.returncode
+        return stdout.strip(), stderr.strip(), exitcode
     #END_CLASS_HEADER
 
     # config contains contents of config file in a hash or None if it couldn't
@@ -144,17 +149,12 @@ class jgi_rqc_readqc:
         """
         # ctx is the context object
         # return variables are: output
-        #BEGIN run_readqc
-        def runCommand(cmd):
-            process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = process.communicate()
-            exitcode = process.returncode
-            return stdout.strip(), stderr.strip(), exitcode
+        #BEGIN run_readqc       
 
         self.log('Starting Read QC run. Parameters:')
         self.log(str(params))
-        print("params = ", params)
 
+        ## Check params
         for name in ['fastqFile', 'libName', 'isMultiplexed', 'workspaceName']:
             if name not in params:
                 raise ValueError('Parameter "' + name + '" is required but missing')
@@ -164,91 +164,47 @@ class jgi_rqc_readqc:
             raise ValueError('Library name must be a string')
         if not isinstance(params['isMultiplexed'], int):
             raise ValueError('Min length must be a non-negative integer')
-
-
-
         
-
-
-
-        # assembly_util = AssemblyUtil(self.callback_url)
-        # file = assembly_util.get_assembly_as_fasta({'ref': params['fastqFile']})
-        # print "fastq file = "
-        # pprint.pprint(file)
-        
+        ## Parse params to get the input ref
         inputFileRef = self.get_input_file_ref_from_params(params)
-        print("\ninputFileRef = ", inputFileRef)
+        self.log("\ninputFileRef = %s" % inputFileRef)
         
         token = ctx['token']        
-        wsClient = WSClient(self.ws_url, token=token)
-        
+        wsClient = WSClient(self.ws_url, token=token)        
         library = None
         try:
             library = wsClient.get_objects2({'objects': [{'ref': inputFileRef}]})['data'][0]
         except Exception as e:
             raise ValueError('Unable to get read library object from workspace: (' + inputFileRef + ')' + str(e))
         
-        # print("\nlib = ", library)
-        pprint(library)
-        pprint(library['data']['lib1']['file'])
-        
-        print("\nlib['info'][6] = ", library['info'][6])
-        print("\nlib['info'][7] = ", library['info'][7])
-        print("\nlib['info'][2] = ", library['info'][2])
-        print("\nlib['info'][1] = ", library['info'][1])
-                
-        
-
+        ## Download input file from shock
         download_read_params = {'read_libraries': [], 'interleaved': "false"}
         if "SingleEnd" in library['info'][2] or "PairedEnd" in library['info'][2]:
-            download_read_params['read_libraries'].append(library['info'][7] + "/" + library['info'][1])
-        elif "SampleSet" in library['info'][2]:
-            for sample_id in library['data']['sample_ids']:
-                if "/" in sample_id:
-                    download_read_params['read_libraries'].append(sample_id)
-                else:
-                    if sample_id.isdigit():
-                        download_read_params['read_libraries'].append(library['info'][6] + "/" + sample_id)
-                    else:
-                        download_read_params['read_libraries'].append(library['info'][7] + "/" + sample_id)
-                        
+            download_read_params['read_libraries'].append(library['info'][7] + "/" + library['info'][1])        
         ru = ReadsUtils(os.environ['SDK_CALLBACK_URL'])
         ret = ru.download_reads(download_read_params)
-        print("download = ", ret)
-        
-        for f in ret['files']:
-            print ret['files'][f]['files']
-        
         inputFilePath = os.path.dirname(ret['files'][f]['files']['fwd'])
         inputFile = os.path.join(inputFilePath, library['data']['lib1']['file']['id'])
         fileName = ret['files'][f]['files']['fwd_name'].replace(".gz", "")        
         newFile = os.path.join(inputFilePath, fileName)
-        # cmd = "ln -s %s %s" % (inputFile, newFile)
-        # runCommand(cmd)
         
-        # uuid_string = str(uuid.uuid4())
-        # read_file_path = self.scratch+"/"+uuid_string
-        read_file_path = self.scratch+"/input"
+        ## Recreate input file
+        read_file_path = self.scratch + "/input"
         os.mkdir(read_file_path)
         newFile2 = os.path.join(read_file_path, fileName)
         shutil.copy(inputFile, newFile2)
         
-        output = {}
-        
-        # outputDir = os.path.join(self.scratch, str(uuid.uuid4()))
-        outputDir = self.scratch+"/output"
+        ## Prepare output directory
+        output = {}        
+        outputDir = self.scratch + "/output"
         self.mkdir_p(outputDir)
-        print("\ntdir = ", outputDir)
-        # outputDir = os.path.join(outputDir, file['fastqFile'])
-        # print outoutDir
-        
-        # cmd = "/kb/module/readqc.sh -f %s -o %s -r 0 -l CTZOX --skip-blast -m 0" \
-        #       % (file['path'], outoutDir)
+        self.log("Output directory: %s", outputDir)
+
+        ## Run readqc      
         cmd = "/kb/module/readqc.sh -f %s -o %s -r 0 -l CTZOX --skip-blast -m 0" \
               % (newFile2, outputDir)
-        stdOut, strErr, exitCode = runCommand(cmd)
-        print "stdOut, strErr, exitCode = %s %s %s" % (stdOut, strErr, exitCode)
-        
+        stdOut, strErr, exitCode = self.run_command(cmd)
+        self.log("Readqc stdout, strerr, exit code = %s %s %s" % (stdOut, strErr, exitCode))        
         
         ## output to shock
         dfu = DFUClient(self.callback_url)
