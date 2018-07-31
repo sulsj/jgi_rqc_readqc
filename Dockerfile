@@ -78,6 +78,7 @@ ENV CROMWELL_VER 33.1
 RUN CROMWELLJAR=cromwell-${CROMWELL_VER}.jar \
     && wget -O $CROMWELLJAR https://github.com/broadinstitute/cromwell/releases/download/${CROMWELL_VER}/cromwell-${CROMWELL_VER}.jar
 COPY $CROMWELLJAR /kb/module/cromwell.jar
+COPY wdl/* /kb/module/
 
 ## for test
 #COPY cromwell-33.1.jar /kb/module/

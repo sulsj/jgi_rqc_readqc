@@ -86,6 +86,7 @@ class jgi_rqc_readqcTest(unittest.TestCase):
         #
         # Check returned data with
         # self.assertEqual(ret[...], ...) or other unittest methods
+        
         print "test..."
         
         import subprocess
@@ -100,16 +101,8 @@ class jgi_rqc_readqcTest(unittest.TestCase):
         
         cmd = "echo $PATH; which reformat.sh; which Rscript; Rscript --version"
         print runCommand(cmd)
-        
-        # cmd = "source activate base; which Rscript; Rscript --version"
-        # print runCommand(cmd)
-        
-        # cmd = "echo $PWD && ls /kb/module"
-        # print runCommand(cmd)
-        
-        # cmd = "source activate base; which python; python -c 'import colorlog; print colorlog.__file__'"
-        # print runCommand(cmd)
-        
+       
+        ## Python dep check
         import cython
         import scipy
         import pika
@@ -140,11 +133,11 @@ class jgi_rqc_readqcTest(unittest.TestCase):
         #     'assembly_name': 'MyAssembly'
         # }
         # cls.assembly_ref = cls.au.save_assembly_from_fasta(assembly_params)
+       
         
-        
-        # ref = "79/16/1"
-        ref = "16243/6/1" # 7257.1.64419.CACATTGTGAG.fastq
+        # ref = "79/16/1"        
         # ref = "16243/8/1" # 12544.1.263494.CGAGTAT-CGAGTAT.fastq.gz
+        ref = "16243/6/1" # 7257.1.64419.CACATTGTGAG.fastq
         
         result = self.getImpl().run_readqc(self.getContext(), {
             'workspaceName': self.getWsName(),

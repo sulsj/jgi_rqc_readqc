@@ -63,8 +63,7 @@ module jgi_rqc_readqc {
     } readqcAppOutput;
     
     /* Run readqc and save a KBaseReport with the output. */
-    funcdef run_readqc_app(readqcAppParams params) returns(readqcAppOutput output)
-        authentication required;
+    funcdef run_readqc_app(readqcAppParams params) returns(readqcAppOutput output) authentication required;
     
     
     /* Input for running readqc
@@ -99,6 +98,5 @@ module jgi_rqc_readqc {
     } readqcOutput;
     
     /* Run readqc and return a shock node containing the zipped readqc output. */
-    funcdef run_readqc(readqcParams params) returns(readqcOutput output)
-        authentication required;    
+    funcdef run_readqc(readqcParams params) returns(readqcOutput output) authentication required;    
 };

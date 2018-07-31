@@ -2,7 +2,7 @@ module-name:
     jgi_rqc_readqc
 
 module-description:
-    A KBase module
+    JGI RQC Read QC pipeline in KBase
 
 service-language:
     python

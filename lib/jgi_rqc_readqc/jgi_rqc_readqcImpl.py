@@ -62,6 +62,16 @@ class jgi_rqc_readqc:
                                  '"workspaceName" with "fastqFile" fields ' +
                                  'must be set.')
             return str(params['workspaceName']) + '/' + str(params['fastqFile'])
+        
+    def get_input_lib_name_from_params(self, params):
+        if 'libName' in params:
+            return params['libName']
+        else:
+            if 'workspaceName' not in params and 'libName' not in params:
+                raise ValueError('Either the "libName" field or the ' +
+                                 '"workspaceName" with "libName" fields ' +
+                                 'must be set.')
+            return str(params['workspaceName']) + '/' + str(params['libName'])
     
     def run_command(self, cmd):
         process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -149,10 +159,11 @@ class jgi_rqc_readqc:
         """
         # ctx is the context object
         # return variables are: output
-        #BEGIN run_readqc       
-
+        #BEGIN run_readqc               
         self.log('Starting Read QC run. Parameters:')
         self.log(str(params))
+        
+        output = {}        
 
         ## Check params
         for name in ['fastqFile', 'libName', 'isMultiplexed', 'workspaceName']:
@@ -167,7 +178,9 @@ class jgi_rqc_readqc:
         
         ## Parse params to get the input ref
         inputFileRef = self.get_input_file_ref_from_params(params)
-        self.log("\ninputFileRef = %s" % inputFileRef)
+        self.log("\nInput file ref: %s" % inputFileRef)
+        inputLibName = self.get_input_lib_name_from_params(params)        
+        self.log("\nLibrary Name: %s" % inputLibName)
         
         token = ctx['token']        
         wsClient = WSClient(self.ws_url, token=token)        
@@ -194,15 +207,14 @@ class jgi_rqc_readqc:
         newFile2 = os.path.join(read_file_path, fileName)
         shutil.copy(inputFile, newFile2)
         
-        ## Prepare output directory
-        output = {}        
+        ## Prepare output directory        
         outputDir = self.scratch + "/output"
         self.mkdir_p(outputDir)
         self.log("Output directory: %s", outputDir)
 
         ## Run readqc      
-        cmd = "/kb/module/readqc.sh -f %s -o %s -r 0 -l CTZOX --skip-blast -m 0" \
-              % (newFile2, outputDir)
+        cmd = "/kb/module/readqc.sh -f %s -o %s -r 0 -l %s --skip-blast -m 0" \
+              % (newFile2, outputDir, inputLibName)
         stdOut, strErr, exitCode = self.run_command(cmd)
         self.log("Readqc stdout, strerr, exit code = %s %s %s" % (stdOut, strErr, exitCode))        
         

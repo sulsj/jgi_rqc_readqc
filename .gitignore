@@ -1,6 +1,9 @@
 test_local
+obsolete
 sdk.cfg
 *.BAK
+*.BAK?
 *.OLD
+*.OLD?
 cromwell-33.1.jar
 bbmap.tar.gz
