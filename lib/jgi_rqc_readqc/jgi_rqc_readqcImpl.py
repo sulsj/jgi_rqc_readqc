@@ -162,8 +162,6 @@ class jgi_rqc_readqc:
         #BEGIN run_readqc               
         self.log('Starting Read QC run. Parameters:')
         self.log(str(params))
-        
-        output = {}        
 
         ## Check params
         for name in ['fastqFile', 'libName', 'isMultiplexed', 'workspaceName']:
@@ -231,8 +229,7 @@ class jgi_rqc_readqc:
             self.log(str(dfue))
             raise
         
-        output['readqc_out_path'] = outputDir
-        
+        output['readqc_out_path'] = outputDir        
         #END run_readqc
 
         # At some point might do deeper type checking...
