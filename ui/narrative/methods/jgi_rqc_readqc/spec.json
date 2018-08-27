@@ -1,10 +1,10 @@
 {
-    "ver": "0.0.3",
+    "ver": "0.0.4",
     "authors": [
         "sulsj9230"
     ],
     "contact": "",
-    "categories": ["active", "reads"],
+    "categories": ["inactive", "reads"],
     "widgets": {
         "input": null,
         "output": "no-display"
