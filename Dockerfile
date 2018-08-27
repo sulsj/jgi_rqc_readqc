@@ -26,14 +26,14 @@ RUN pip install --upgrade pip \
 #############################################
 ## bbtools
 #############################################
-#RUN wget https://sourceforge.net/projects/bbmap/files/latest/download/bbmap.tar.gz \
-#    && tar -xzvf bbmap.tar.gz \
-#    && rm -rf bbmap.tar.gz
+RUN wget https://sourceforge.net/projects/bbmap/files/latest/download/bbmap.tar.gz \
+    && tar -xzvf bbmap.tar.gz \
+    && rm -rf bbmap.tar.gz
 
 ## for test
-COPY bbmap.tar.gz /kb/module/
-RUN tar -xzvf bbmap.tar.gz \
-    && rm -rf bbmap.tar.gz
+#COPY bbmap.tar.gz /kb/module/
+#RUN tar -xzvf bbmap.tar.gz \
+#    && rm -rf bbmap.tar.gz
 
 #############################################
 # readqc
@@ -75,15 +75,16 @@ COPY readqc.sh /kb/module
 ## Cromwell
 #############################################
 #ENV CROMWELL_VER 33.1
-#RUN CROMWELLJAR=cromwell-${CROMWELL_VER}.jar \
-#    && wget -O $CROMWELLJAR https://github.com/broadinstitute/cromwell/releases/download/${CROMWELL_VER}/cromwell-${CROMWELL_VER}.jar
-#COPY $CROMWELLJAR /kb/module/cromwell.jar
-#COPY wdl/* /kb/module/
+ENV CROMWELL_VER 34
+RUN CROMWELLJAR=cromwell-${CROMWELL_VER}.jar \
+    && wget -O $CROMWELLJAR https://github.com/broadinstitute/cromwell/releases/download/${CROMWELL_VER}/cromwell-${CROMWELL_VER}.jar
+COPY $CROMWELLJAR /kb/module/cromwell.jar
+COPY wdl/* /kb/module/
 
 ## for test
-COPY cromwell-33.1.jar /kb/module/
-COPY cromwell.sh /kb/module/
-COPY wdl/* /kb/module/
+#COPY cromwell-33.1.jar /kb/module/
+#COPY cromwell.sh /kb/module/
+#COPY wdl/* /kb/module/
 
 
 ENV PYTHONPATH="/kb/module/jgi-rqc-pipeline/lib:/kb/module/jgi-rqc-pipeline/tools:/usr/local/lib/python2.7/site-packages:${PYTHONPATH}"
